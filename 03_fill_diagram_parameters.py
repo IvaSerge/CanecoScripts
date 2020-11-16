@@ -54,6 +54,31 @@ def GetBuiltInParam(paramName):
 			return i
 
 
+def getByCatAndStrParam(_bic, _bip, _val, _isType):
+	global doc
+	if _isType:
+		fnrvStr = FilterStringEquals()
+		pvp = ParameterValueProvider(ElementId(int(_bip)))
+		frule = FilterStringRule(pvp, fnrvStr, _val, False)
+		filter = ElementParameterFilter(frule)
+		elem = FilteredElementCollector(doc).\
+			OfCategory(_bic).\
+			WhereElementIsElementType().\
+			WherePasses(filter).\
+			ToElements()
+	else:
+		fnrvStr = FilterStringEquals()
+		pvp = ParameterValueProvider(ElementId(int(_bip)))
+		frule = FilterStringRule(pvp, fnrvStr, _val, False)
+		filter = ElementParameterFilter(frule)
+		elem = FilteredElementCollector(doc).\
+			OfCategory(_bic).\
+			WhereElementIsNotElementType().\
+			WherePasses(filter).\
+			ToElements()
+	return elem
+
+
 def SetupParVal(elem, name, pValue):
 	global doc
 	# custom parameter
@@ -172,48 +197,30 @@ boards = FilteredElementCollector(doc).\
 	ToElements()
 
 
-# # Filtering systems that need to be calculated
-# if calculate_all:
-# 	# Filtering out not connected circuits
-# 	rvtSystems = [sys for sys in rvtAllSystems if sys.BaseEquipment]
-# else:
-# 	# changes to the board will also affect all other boards
-# 	# that are higher in the electrical diagramm
-# 	# That's why all that board circuits also need to be changed
-# 	rvtSystems = list()
-# 	while update_board_name:
-# 		# Get board instance
-# 		update_board = getByCatAndStrParam(
-# 			BuiltInCategory.OST_ElectricalEquipment,
-# 			BuiltInParameter.RBS_ELEC_PANEL_NAME,
-# 			update_board_name,
-# 			False)
-# 		try:
-# 			board_systems = getSystems(update_board[0])
-# 		except:
-# 			raise ValueError("Board \"%s\" not found" % update_board_name)
-# 		board_main_system = board_systems[0]
-# 		low_systems = board_systems[1]
-# 		if low_systems:
-# 			map(lambda x: rvtSystems.append(x), low_systems)
-
-# 		# loop exit conditions
-# 		update_board_name = None
-# 		if board_main_system:
-# 			update_board_name = GetParVal(
-# 				board_main_system,
-# 				"RBS_ELEC_CIRCUIT_PANEL_PARAM")
+# Filtering systems that need to be calculated
+if calculate_all:
+	# Filtering out not connected circuits
+	rvtSystems = [sys for sys in rvtAllSystems if sys.BaseEquipment]
+else:
+	# get electrical board to be changed
+	boards = getByCatAndStrParam(
+		BuiltInCategory.OST_ElectricalEquipment,
+		BuiltInParameter.RBS_ELEC_PANEL_NAME,
+		update_board_name,
+		False)
+	# get electrical systems of electircal board
+	rvtSystems = boards[0].MEPModel.ElectricalSystems
 
 # =========Start transaction
 TransactionManager.Instance.EnsureInTransaction(doc)
 
-# # set parameters to systems
+# set parameters to systems
 for filter in filter_list_systems:
 	filter_rules = filter[0]
 	params_to_set = filter[1]
 	# filter elements
 	filtered_elements = map(
-		lambda x: check_element(x, filter_rules), rvtAllSystems)
+		lambda x: check_element(x, filter_rules), rvtSystems)
 	list_to_set = zip(
 		filtered_elements, params_to_set * len(filtered_elements))
 	map(lambda x: set_params(x, params_to_set), filtered_elements)
@@ -233,4 +240,4 @@ TransactionManager.Instance.TransactionTaskDone()
 # =========End transaction
 
 # OUT = boards
-OUT = filtered_elements
+OUT = rvtSystems
