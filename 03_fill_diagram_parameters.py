@@ -90,13 +90,31 @@ def check_element(elem, rules):
 		comparison_function = rule[1]
 		value_to_check = rule[2]
 		param_value = GetParVal(elem, param_name_to_check)
+
 		if comparison_function == "is_equal":
 			if not(param_value == value_to_check):
 				# if filter not passed - quit function
 				return None
+
+		elif comparison_function == "is_not_equal":
+			if not(param_value != value_to_check):
+				# if filter not passed - quit function
+				return None
+
+		elif comparison_function == "string_contains":
+			if not(param_value in value_to_check):
+				# if filter not passed - quit function
+				return None
+
+		elif comparison_function == "string_not_contains":
+			if param_value in value_to_check:
+				# if filter not passed - quit function
+				return None
+
 		else:
 			raise ValueError(
 				"Function \"%s\" not found" % comparison_function)
+
 	return elem
 
 
@@ -106,12 +124,17 @@ def set_params(elem, param_list):
 
 	:attrubutes:
 		elem - element to be changed
-		param_list - list of parameters
-		param_list[0] - parameter name
-		param_list[1] - parameter value
+		param_list - list of parameters to set
+			param[0] - parameter name
+			param[1] - parameter value
 	"""
 	if not(elem):
 		return None
+
+	for param in param_list:
+		param_name = param[0]
+		param_value = param[1]
+		SetupParVal(elem, param_name, param_value)
 
 
 # =========standart parameters
