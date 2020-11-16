@@ -31,19 +31,17 @@ def GetParVal(elem, name):
 		param = elem.get_Parameter(GetBuiltInParam(name))
 
 	# get paremeter Value if found
-	try:
-		storeType = param.StorageType
-		# value = storeType
-		if storeType == StorageType.String:
-			value = param.AsString()
-		elif storeType == StorageType.Integer:
-			value = param.AsDouble()
-		elif storeType == StorageType.Double:
-			value = param.AsDouble()
-		elif storeType == StorageType.ElementId:
-			value = param.AsValueString()
-	except:
-		pass
+	storeType = param.StorageType
+
+	# value = storeType
+	if storeType == StorageType.String:
+		value = param.AsString()
+	elif storeType == StorageType.Integer:
+		value = param.AsInteger()
+	elif storeType == StorageType.Double:
+		value = param.AsDouble()
+	elif storeType == StorageType.ElementId:
+		value = param.AsValueString()
 	return value
 
 
@@ -74,20 +72,44 @@ def SetupParVal(elem, name, pValue):
 	return elem
 
 
+def check_element(elem, rules):
+	"""
+	Check if element elements correspondes rules
+
+	:attrubutes:
+		elem -elemet to be checked
+		rulest - list of rules to be applyed all rules
+			need to be "True" to pass the filter
+
+	:return:
+		elem if all filters are True
+	"""
+	check_list = list()
+	for rule in rules:
+		param_name_to_check = rule[0]
+		comparison_function = rule[1]
+		value_to_check = rule[2]
+		param_value = GetParVal(elem, param_name_to_check)
+		if comparison_function == "is_equal":
+			check_list.append(param_value == value_to_check)
+		else:
+			pass
+	if all(check_list):
+		return elem
+	return all(check_list)
+
+
 # =========standart parameters
 reload = IN[0]
 calculate_all = IN[1]
 update_board_name = IN[2]
+filter_list = IN[3]
 outlist = list()
 DISTR_SYS_NAME = "400/230"
 
 # Get all electrical circuits
 # Circuit type need to be electrilcal only
 # electrical circuit type ID == 6
-testParam = BuiltInParameter.RBS_ELEC_CIRCUIT_TYPE
-pvp = ParameterValueProvider(ElementId(int(testParam)))
-sysRule = FilterIntegerRule(pvp, FilterNumericEquals(), 6)
-
 testParam = BuiltInParameter.RBS_ELEC_CIRCUIT_TYPE
 pvp = ParameterValueProvider(ElementId(int(testParam)))
 sysRule = FilterIntegerRule(pvp, FilterNumericEquals(), 6)
@@ -130,6 +152,7 @@ rvtAllSystems = FilteredElementCollector(doc).\
 # 				board_main_system,
 # 				"RBS_ELEC_CIRCUIT_PANEL_PARAM")
 
+elements = map(lambda x: check_element(x, filter_list[0][0]), rvtAllSystems)
 
 # =========Start transaction
 TransactionManager.Instance.EnsureInTransaction(doc)
@@ -137,4 +160,4 @@ TransactionManager.Instance.EnsureInTransaction(doc)
 TransactionManager.Instance.TransactionTaskDone()
 # =========End transaction
 
-OUT = outlist
+OUT = [x for x in elements if x]
