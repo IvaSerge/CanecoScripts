@@ -93,28 +93,27 @@ def check_element(elem, rules):
 
 		if comparison_function == "is_equal":
 			if not(param_value == value_to_check):
-				# if filter not passed - quit function
+				# filter not passed - quit function
 				return None
 
 		elif comparison_function == "is_not_equal":
 			if not(param_value != value_to_check):
-				# if filter not passed - quit function
+				# filter not passed - quit function
 				return None
 
 		elif comparison_function == "string_contains":
-			if not(param_value in value_to_check):
-				# if filter not passed - quit function
+			if not(value_to_check in param_value):
+				# filter not passed - quit function
 				return None
 
 		elif comparison_function == "string_not_contains":
-			if param_value in value_to_check:
-				# if filter not passed - quit function
+			if value_to_check in param_value:
+				# filter not passed - quit function
 				return None
 
 		else:
 			raise ValueError(
 				"Function \"%s\" not found" % comparison_function)
-
 	return elem
 
 
@@ -138,17 +137,19 @@ def set_params(elem, param_list):
 
 
 # =========standart parameters
+DISTR_SYS_NAME = "400/230"
 reload = IN[0]
 calculate_all = IN[1]
 update_board_name = IN[2]
-filter_list = IN[3]
+filter_list_systems = IN[3]
+filter_list_boards = IN[4]
 outlist = list()
 
 # Get all electrical circuits
 # Circuit type need to be electrilcal only
 # electrical circuit type ID == 6
-testParam = BuiltInParameter.RBS_ELEC_CIRCUIT_TYPE
-pvp = ParameterValueProvider(ElementId(int(testParam)))
+test_param = BuiltInParameter.RBS_ELEC_CIRCUIT_TYPE
+pvp = ParameterValueProvider(ElementId(int(test_param)))
 sysRule = FilterIntegerRule(pvp, FilterNumericEquals(), 6)
 filter = ElementParameterFilter(sysRule)
 
@@ -156,6 +157,20 @@ rvtAllSystems = FilteredElementCollector(doc).\
 	OfCategory(BuiltInCategory.OST_ElectricalCircuit).\
 	WhereElementIsNotElementType().WherePasses(filter).\
 	ToElements()
+
+# Get all boards
+test_param = BuiltInParameter.RBS_FAMILY_CONTENT_DISTRIBUTION_SYSTEM
+pvp = ParameterValueProvider(ElementId(int(test_param)))
+fnrvStr = FilterStringEquals()
+filter = ElementParameterFilter(
+	FilterStringRule(pvp, fnrvStr, DISTR_SYS_NAME, False))
+
+boards = FilteredElementCollector(doc).\
+	OfCategory(BuiltInCategory.OST_ElectricalEquipment).\
+	WhereElementIsNotElementType().\
+	WherePasses(filter).\
+	ToElements()
+
 
 # # Filtering systems that need to be calculated
 # if calculate_all:
@@ -192,18 +207,30 @@ rvtAllSystems = FilteredElementCollector(doc).\
 # =========Start transaction
 TransactionManager.Instance.EnsureInTransaction(doc)
 
-for filter in filter_list:
+# # set parameters to systems
+for filter in filter_list_systems:
 	filter_rules = filter[0]
 	params_to_set = filter[1]
 	# filter elements
 	filtered_elements = map(
 		lambda x: check_element(x, filter_rules), rvtAllSystems)
-	# list_to_set = zip(
-	# 	filtered_elements, params_to_set * len(filtered_elements))
+	list_to_set = zip(
+		filtered_elements, params_to_set * len(filtered_elements))
 	map(lambda x: set_params(x, params_to_set), filtered_elements)
-	outlist.append(params_to_set)
+
+# set parameters to boards
+for filter in filter_list_boards:
+	filter_rules = filter[0]
+	params_to_set = filter[1]
+	# filter elements
+	filtered_elements = map(
+		lambda x: check_element(x, filter_rules), boards)
+	list_to_set = zip(
+		filtered_elements, params_to_set * len(filtered_elements))
+	map(lambda x: set_params(x, params_to_set), filtered_elements)
 
 TransactionManager.Instance.TransactionTaskDone()
 # =========End transaction
 
-OUT = outlist
+# OUT = boards
+OUT = filtered_elements
