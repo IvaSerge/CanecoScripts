@@ -84,19 +84,34 @@ def check_element(elem, rules):
 	:return:
 		elem if all filters are True
 	"""
-	check_list = list()
+
 	for rule in rules:
 		param_name_to_check = rule[0]
 		comparison_function = rule[1]
 		value_to_check = rule[2]
 		param_value = GetParVal(elem, param_name_to_check)
 		if comparison_function == "is_equal":
-			check_list.append(param_value == value_to_check)
+			if not(param_value == value_to_check):
+				# if filter not passed - quit function
+				return None
 		else:
-			pass
-	if all(check_list):
-		return elem
-	return all(check_list)
+			raise ValueError(
+				"Function \"%s\" not found" % comparison_function)
+	return elem
+
+
+def set_params(elem, param_list):
+	"""
+	Set element parameters value
+
+	:attrubutes:
+		elem - element to be changed
+		param_list - list of parameters
+		param_list[0] - parameter name
+		param_list[1] - parameter value
+	"""
+	if not(elem):
+		return None
 
 
 # =========standart parameters
@@ -105,7 +120,6 @@ calculate_all = IN[1]
 update_board_name = IN[2]
 filter_list = IN[3]
 outlist = list()
-DISTR_SYS_NAME = "400/230"
 
 # Get all electrical circuits
 # Circuit type need to be electrilcal only
@@ -152,12 +166,21 @@ rvtAllSystems = FilteredElementCollector(doc).\
 # 				board_main_system,
 # 				"RBS_ELEC_CIRCUIT_PANEL_PARAM")
 
-elements = map(lambda x: check_element(x, filter_list[0][0]), rvtAllSystems)
-
 # =========Start transaction
 TransactionManager.Instance.EnsureInTransaction(doc)
+
+for filter in filter_list:
+	filter_rules = filter[0]
+	params_to_set = filter[1]
+	# filter elements
+	filtered_elements = map(
+		lambda x: check_element(x, filter_rules), rvtAllSystems)
+	# list_to_set = zip(
+	# 	filtered_elements, params_to_set * len(filtered_elements))
+	map(lambda x: set_params(x, params_to_set), filtered_elements)
+	outlist.append(params_to_set)
 
 TransactionManager.Instance.TransactionTaskDone()
 # =========End transaction
 
-OUT = [x for x in elements if x]
+OUT = outlist
