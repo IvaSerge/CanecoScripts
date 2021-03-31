@@ -226,15 +226,15 @@ for filter in filter_list_systems:
 	map(lambda x: set_params(x, params_to_set), filtered_elements)
 
 # set parameters to boards
-# for filter in filter_list_boards:
-# 	filter_rules = filter[0]
-# 	params_to_set = filter[1]
-# 	# filter elements
-# 	filtered_elements = map(
-# 		lambda x: check_element(x, filter_rules), boards)
-# 	list_to_set = zip(
-# 		filtered_elements, params_to_set * len(filtered_elements))
-# 	map(lambda x: set_params(x, params_to_set), filtered_elements)
+for filter in filter_list_boards:
+	filter_rules = filter[0]
+	params_to_set = filter[1]
+	# filter elements
+	filtered_elements = map(
+		lambda x: check_element(x, filter_rules), boards)
+	list_to_set = zip(
+		filtered_elements, params_to_set * len(filtered_elements))
+	map(lambda x: set_params(x, params_to_set), filtered_elements)
 
 TransactionManager.Instance.TransactionTaskDone()
 # =========End transaction
