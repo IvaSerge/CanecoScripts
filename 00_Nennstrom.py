@@ -121,7 +121,7 @@ def SSclearCable(_sys):
 		brdCode = elem.LookupParameter("MC Panel Code").AsString()
 		# is this board marked as subboard?
 		if brdCode and brdCode != "":
-			SetupParVal(_sys, "CBT:CIR_Kabel", "")
+			SetupParVal(_sys, "E_CableSize", "")
 			SetupParVal(_sys, "RBS_ELEC_CIRCUIT_WIRE_TYPE_PARAM", cabNA.Id)
 			return _sys
 		else:
@@ -316,7 +316,7 @@ TESTBOARD = doc.Create.NewFamilyInstance(
 TESTBOARD.get_Parameter(
 	BuiltInParameter.RBS_FAMILY_CONTENT_DISTRIBUTION_SYSTEM).Set(distrSys)
 
-map(clearParam, rvtAllSystems)
+# map(clearParam, rvtAllSystems)
 clearSSList = [SSclearCable(x) for x in rvtSystems]
 setParList = [SetApparentValues(x) for x in rvtSystems]
 doc.Delete(TESTBOARD.Id)
@@ -324,5 +324,5 @@ doc.Delete(TESTBOARD.Id)
 # =========End transaction
 TransactionManager.Instance.TransactionTaskDone()
 
-# OUT = clearSSList
-OUT = rvtSystems
+OUT = clearSSList
+# OUT = rvtSystems
