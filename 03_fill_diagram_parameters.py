@@ -81,12 +81,28 @@ def getByCatAndStrParam(_bic, _bip, _val, _isType):
 
 def SetupParVal(elem, name, pValue):
 	global doc
+	if name == "RBS_ELEC_CIRCUIT_WIRE_TYPE_PARAM":
+		fnrvStr = FilterStringEquals()
+		wire_param = elem.get_Parameter(BuiltInParameter.SYMBOL_NAME_PARAM)
+		pvp = ParameterValueProvider(wire_param.Id)
+		frule = FilterStringRule(pvp, fnrvStr, pValue, False)
+		filter = ElementParameterFilter(frule)
+		wire = FilteredElementCollector(doc).\
+			OfClass(Autodesk.Revit.DB.Electrical.WireType).\
+			WhereElementIsElementType().\
+			WherePasses(filter).\
+			FirstElement()
+		param = elem.get_Parameter(BuiltInParameter.RBS_ELEC_CIRCUIT_WIRE_TYPE_PARAM)
+		param.Set(wire.Id)
+		return param
+
 	# custom parameter
 	param = elem.LookupParameter(name)
 	# check is it a BuiltIn parameter if not found
+
 	if not(param):
 		try:
-			param = elem.get_Parameter(GetBuiltInParam(name)).Set(pValue)
+			param = elem.get_Parameter(GetBuiltInParam(name))
 		except:
 			pass
 	if param:
@@ -94,7 +110,7 @@ def SetupParVal(elem, name, pValue):
 			param.Set(pValue)
 		except:
 			pass
-	return elem
+	return param
 
 
 def check_element(elem, rules):
@@ -221,23 +237,33 @@ for filter in filter_list_systems:
 	# filter elements
 	filtered_elements = map(
 		lambda x: check_element(x, filter_rules), rvtSystems)
+	filtered_elements = [x for x in filtered_elements if x]
+	if not filtered_elements:
+		continue
 	list_to_set = zip(
 		filtered_elements, params_to_set * len(filtered_elements))
 	map(lambda x: set_params(x, params_to_set), filtered_elements)
 
-# set parameters to boards
-for filter in filter_list_boards:
-	filter_rules = filter[0]
-	params_to_set = filter[1]
-	# filter elements
-	filtered_elements = map(
-		lambda x: check_element(x, filter_rules), boards)
-	list_to_set = zip(
-		filtered_elements, params_to_set * len(filtered_elements))
-	map(lambda x: set_params(x, params_to_set), filtered_elements)
+# # set parameters to boards
+# for filter in filter_list_boards:
+# 	filter_rules = filter[0]
+# 	params_to_set = filter[1]
+
+# 	# filter elements
+# 	filtered_elements = list()
+# 	for board in boards:
+# 		try:
+# 			check_board = check_element(board, filter_rules)
+# 			filtered_elements.append(check_board)
+# 		except:
+# 			pass
+# 	filtered_elements = [x for x in filtered_elements if x]
+	# list_to_set = zip(
+	# 	filtered_elements, params_to_set * len(filtered_elements))
+	# map(lambda x: set_params(x, params_to_set), filtered_elements)
 
 TransactionManager.Instance.TransactionTaskDone()
 # =========End transaction
 
-# OUT = boards
-OUT = [x for x in filtered_elements if x]
+OUT = outlist
+# OUT = [x for x in filtered_elements if x]
