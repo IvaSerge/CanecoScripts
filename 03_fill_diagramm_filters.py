@@ -209,23 +209,6 @@ sys_filters.append(filter_SS4_NOT)
 # Rules for boards
 # =======================
 
-# Rules for NSHV
-rules_NSHV = list()
-rules_NSHV.append(["RBS_ELEC_CIRCUIT_PANEL_PARAM", "string_contains", "NSHV"])
-param_NSHV = list()
-param_NSHV.append(["E_Sch_Nennstrom", "50A"])
-param_NSHV.append(["E_Sch_Schutztyp", "Schalter"])
-param_NSHV.append(["E_Sch_Schutztyp_kurz", "QF"])
-param_NSHV.append(["E_Sch_Elektrischen Schlag", ""])
-param_NSHV.append(["E_CableSize", "4x35/16"])
-param_NSHV.append(["RBS_ELEC_CIRCUIT_WIRE_TYPE_PARAM", "NYCWY"])
-filter_NSHV = [rules_NSHV, param_NSHV]
-
-
-# =======================
-# Rules for boards
-# =======================
-
 # Rules for Büro
 rules_brd_Büro = list()
 rules_brd_Büro.append(["RBS_ELEC_PANEL_NAME", "string_contains", "Büro"])
