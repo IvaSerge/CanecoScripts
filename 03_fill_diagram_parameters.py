@@ -244,23 +244,23 @@ for filter in filter_list_systems:
 		filtered_elements, params_to_set * len(filtered_elements))
 	map(lambda x: set_params(x, params_to_set), filtered_elements)
 
-# # set parameters to boards
-# for filter in filter_list_boards:
-# 	filter_rules = filter[0]
-# 	params_to_set = filter[1]
-
-# 	# filter elements
-# 	filtered_elements = list()
-# 	for board in boards:
-# 		try:
-# 			check_board = check_element(board, filter_rules)
-# 			filtered_elements.append(check_board)
-# 		except:
-# 			pass
-# 	filtered_elements = [x for x in filtered_elements if x]
-	# list_to_set = zip(
-	# 	filtered_elements, params_to_set * len(filtered_elements))
-	# map(lambda x: set_params(x, params_to_set), filtered_elements)
+# set parameters to boards
+for filter in filter_list_boards:
+	filter_rules = filter[0]
+	params_to_set = filter[1]
+	# filter elements
+	filtered_elements = list()
+	for board in boards:
+		try:
+			check_board = check_element(board, filter_rules)
+			filtered_elements.append(check_board)
+		except:
+			pass
+	filtered_elements = [x for x in filtered_elements if x]
+	outlist.append(filtered_elements)
+	list_to_set = zip(
+		filtered_elements, params_to_set * len(filtered_elements))
+	map(lambda x: set_params(x, params_to_set), filtered_elements)
 
 TransactionManager.Instance.TransactionTaskDone()
 # =========End transaction
