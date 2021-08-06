@@ -215,9 +215,24 @@ param_SS5_1.append(["E_Sch_Nennstrom", "16A"])
 param_SS5_1.append(["E_Sch_Schutztyp", "FILS-Schalter B"])
 param_SS5_1.append(["E_Sch_Schutztyp_kurz", "QD"])
 param_SS5_1.append(["E_Sch_Elektrischen Schlag", "FI 30mA"])
-param_SS5_1.append(["E_CableSize", ""])
-param_SS5_1.append(["RBS_ELEC_CIRCUIT_WIRE_TYPE_PARAM", "N/A"])
+param_SS5_1.append(["E_CableSize", "5x2.5"])
+param_SS5_1.append(["RBS_ELEC_CIRCUIT_WIRE_TYPE_PARAM", "NYM"])
 filter_SS5_1 = [rules_SS5_1, param_SS5_1]
+
+# Rules for SiBel
+rules_UZB = list()
+rules_UZB.append(["RBS_ELEC_CIRCUIT_PANEL_PARAM", "string_contains", "UZB"])
+param_UZB = list()
+param_UZB.append(["E_Sch_Family", "E_SCH_SICHERUNGSSCHALTER"])
+param_UZB.append(["E_Sch_FamilyType", "1p.Schutzschalter"])
+param_UZB.append(["E_Sch_Nennstrom", "10A"])
+param_UZB.append(["E_Sch_Schutztyp", "LS-Schalter B"])
+param_UZB.append(["E_Sch_Schutztyp_kurz", "QF"])
+param_UZB.append(["E_Sch_Elektrischen Schlag", ""])
+param_UZB.append(["E_CableSize", "3x1.5"])
+param_UZB.append(["RBS_ELEC_CIRCUIT_WIRE_TYPE_PARAM", "NYM"])
+filter_UZB = [rules_UZB, param_UZB]
+
 
 # list of filters
 sys_filters = list()
@@ -235,6 +250,7 @@ sys_filters.append(filter_WeWork_U)
 sys_filters.append(filter_WeWork_SS5)
 sys_filters.append(filter_SS5_NOT)
 sys_filters.append(filter_SS5_1)
+sys_filters.append(filter_UZB)
 
 # =======================
 # Rules for boards
