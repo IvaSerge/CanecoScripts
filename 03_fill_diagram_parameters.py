@@ -115,11 +115,11 @@ def SetupParVal(elem, name, pValue):
 
 def check_element(elem, rules):
 	"""
-	Check if element elements correspondes rules
+	Check if element correspondes rules
 
 	:attrubutes:
-		elem -elemet to be checked
-		rulest - list of rules to be applyed all rules
+		elem - elemet to be checked
+		rules - list of rules to be applyed all rules
 			need to be "True" to pass the filter
 
 	:return:
@@ -179,11 +179,11 @@ def set_params(elem, param_list):
 
 # =========standart parameters
 DISTR_SYS_NAME = "400/230"
-reload = IN[0]
-calculate_all = IN[1]
-update_board_name = IN[2]
-filter_list_systems = IN[3]
-filter_list_boards = IN[4]
+reload = IN[0] # type: ignore
+calculate_all = IN[1] # type: ignore
+update_board_name = IN[2] # type: ignore
+filter_list_systems = IN[3] # type: ignore
+filter_list_boards = IN[4] # type: ignore
 outlist = list()
 
 # Get all electrical circuits
