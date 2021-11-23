@@ -210,19 +210,15 @@ def getSystems(_brd):
 
 
 # =========standart parameters
-reload = IN[0]
-calculate_all = IN[1]
-update_board_name = IN[2]
+reload = IN[0]  # type: ignore
+calculate_all = IN[1]  # type: ignore
+update_board_name = IN[2]  # type: ignore
 outlist = list()
 DISTR_SYS_NAME = "400/230"
 
 # Get all electrical circuits
 # Circuit type need to be electrilca only
 # electrical circuit type ID == 6
-testParam = BuiltInParameter.RBS_ELEC_CIRCUIT_TYPE
-pvp = ParameterValueProvider(ElementId(int(testParam)))
-sysRule = FilterIntegerRule(pvp, FilterNumericEquals(), 6)
-
 testParam = BuiltInParameter.RBS_ELEC_CIRCUIT_TYPE
 pvp = ParameterValueProvider(ElementId(int(testParam)))
 sysRule = FilterIntegerRule(pvp, FilterNumericEquals(), 6)
