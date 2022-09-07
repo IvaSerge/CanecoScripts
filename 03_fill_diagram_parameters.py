@@ -179,11 +179,11 @@ def set_params(elem, param_list):
 
 # =========standart parameters
 DISTR_SYS_NAME = "400/230"
-reload = IN[0] # type: ignore
-calculate_all = IN[1] # type: ignore
-update_board_name = IN[2] # type: ignore
-filter_list_systems = IN[3] # type: ignore
-filter_list_boards = IN[4] # type: ignore
+reload = IN[0]  # type: ignore
+calculate_all = IN[1]  # type: ignore
+update_board_name = IN[2]  # type: ignore
+filter_list_systems = IN[3]  # type: ignore
+filter_list_boards = IN[4]  # type: ignore
 outlist = list()
 
 # Get all electrical circuits
