@@ -27,7 +27,7 @@ def GetParVal(elem, name):
 	# custom parameter
 	param = elem.LookupParameter(name)
 	# check is it a BuiltIn parameter if not found
-	if not(param):
+	if not param:
 		param = elem.get_Parameter(GetBuiltInParam(name))
 
 	# get paremeter Value if found
@@ -61,7 +61,7 @@ def SetupParVal(elem, name, pValue):
 	# custom parameter
 	param = elem.LookupParameter(name)
 	# check is it a BuiltIn parameter if not found
-	if not(param):
+	if not param:
 		try:
 			param = elem.get_Parameter(GetBuiltInParam(name)).Set(pValue)
 		except:
@@ -203,7 +203,7 @@ def getSystems(_brd):
 		else:
 			mainboardsys = mainboardsysLst[0]
 		lowsys = [i for i in allsys if i.Id in lowsysId]
-		lowsys.sort(key=lambda x: float(GetParVal(x, "RBS_ELEC_CIRCUIT_NUMBER")))
+		lowsys.sort(key=lambda x: x.StartSlot)
 		return mainboardsys, lowsys
 	else:
 		return [i for i in allsys][0], None
